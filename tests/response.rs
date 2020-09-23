@@ -3,7 +3,7 @@ type Response = json_rpc_types::Response<serde_json::Value, serde_json::Value>;
 use json_rpc_types::{Id, Version, Error, ErrorCode};
 
 fn create_error() -> Error<serde_json::Value> {
-    let mut error = Error::from_code(ErrorCode::InvalidRequest);
+    let mut error = Error::from_code(ErrorCode::MethodNotFound);
     error.data = Some(serde_json::Value::from("text"));
     error
 }
@@ -30,13 +30,13 @@ fn success_failure_serialize() {
     let result = Response::error(Version::V2, create_error(), Some(Id::Num(1)));
 
     let serialized = serde_json::to_string(&result).unwrap();
-    assert_eq!(serialized, r#"{"jsonrpc":"2.0","error":{"code":-32600,"message":"Invalid Request","data":"text"},"id":1}"#);
+    assert_eq!(serialized, r#"{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found","data":"text"},"id":1}"#);
 }
 
 #[test]
 fn success_failure_deserialize() {
     let expected = Response::error(Version::V2, create_error(), None);
-    let text = r#"{"jsonrpc":"2.0","error":{"data":"text","code":-32600,"message":"Invalid Request"},"id":null}"#;
+    let text = r#"{"jsonrpc":"2.0","error":{"data":"text","code":-32601,"message":"Method not found"},"id":null}"#;
 
     let result: Response = serde_json::from_str(text).unwrap();
     assert_eq!(result, expected);
