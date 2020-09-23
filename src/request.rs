@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-type StrBuf = str_buf::StrBuf<[u8; 36]>;
+type StrBuf = str_buf::StrBuf<[u8; 32]>;
 
 use crate::version::Version;
 use crate::id::Id;
@@ -14,7 +14,7 @@ use crate::id::Id;
 ///Type parameters:
 ///
 ///- `P` - to specify type of `params` field, which is optional. Normally it should be collection of values or object. But choice is yours.
-///- `T` - specifies textual type. By default it uses static buffer of 36 bytes, which is more than enough in normal cases.
+///- `T` - specifies textual type. By default it uses static buffer of 32 bytes, which is more than enough in normal cases.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Request<P, T=StrBuf> {
@@ -22,7 +22,7 @@ pub struct Request<P, T=StrBuf> {
     pub jsonrpc: Version,
     ///A String containing the name of the method to be invoked
     ///
-    ///By default is static buffer of 36 bytes.
+    ///By default is static buffer of 32 bytes.
     pub method: T,
     #[serde(skip_serializing_if = "Option::is_none")]
     ///A Structured value that holds the parameter values to be used during the invocation of the method

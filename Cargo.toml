@@ -1,6 +1,6 @@
 [package]
 name = "json-rpc-types"
-version = "1.0.0-beta.1"
+version = "1.0.0-beta.2"
 authors = ["Douman <douman@gmx.se>"]
 edition = "2018"
 description = "Type definitions for JSON-RPC"

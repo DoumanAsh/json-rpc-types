@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use serde::de::{Deserializer};
 use serde::ser::{Serializer};
 
-type StrBuf = str_buf::StrBuf<[u8; 24]>;
+type StrBuf = str_buf::StrBuf<[u8; 16]>;
 
 ///JSON-RPC error code
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -91,7 +91,7 @@ pub struct Error<T> {
 impl<T> Error<T> {
     ///Constructs error with custom message
     pub const fn with_custom_msg(code: ErrorCode, message: &str) -> Self {
-        let mut storage = [0; 24];
+        let mut storage = [0; 16];
         let msg = message.as_bytes();
         let mut idx = 0;
         loop {
