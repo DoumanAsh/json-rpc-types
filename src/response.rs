@@ -8,8 +8,9 @@ use crate::id::Id;
 ///
 ///When omitting `id`, it shall be serialized as `null` and means you're unable to identify `id` of
 ///`Request`.
-///But as JSON-RPCv2 specifies that `id` must be always present, deserialization fails on it being
-///missed.
+///Note that JSON-RPCv2 specifies that `id` must be always present, therefore you're encouraged to
+///treat missing `id` as error, unless response is error itself, in which case it might be
+///indication that server treats request as invalid (e.g. unable to parse request's id).
 ///
 ///`jsonrpc` may be omitted during deserialization and defaults to v2.
 ///
@@ -74,7 +75,6 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Deserialize<'de> for Respons
                 let mut version = None;
                 let mut result = None;
                 let mut id = None;
-                let mut id_set = false;
 
                 while let Some(key) = map.next_key::<&'de str>()? {
                     match key {
@@ -92,17 +92,12 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Deserialize<'de> for Respons
                             return Err(serde::de::Error::custom("JSON-RPC Response contains both error and result field"));
                         },
                         "id" => {
-                            id_set = true;
                             id = map.next_value::<Option<Id>>()?;
                         },
                         unknown => {
                             return Err(serde::de::Error::custom(format_args!("JSON-RPC Response contains unknown field {}", unknown)));
                         }
                     }
-                }
-
-                if id_set == false {
-                    return Err(serde::de::Error::custom("JSON-RPC Response is missing a id field."))
                 }
 
                 Ok(Self::Value {

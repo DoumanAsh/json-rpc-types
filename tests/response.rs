@@ -44,21 +44,23 @@ fn success_failure_deserialize() {
 
 #[test]
 fn response_deserialize_should_fail_on_unknown_field() {
-    let text = r#"{"jsonrp":"2.0","error":{"data":"text","code":-32600,"message":"Invalid Request"}, "id": null, "result": 1}"#;
+    let text = r#"{"jsonrp":"2.0","error":{"data":"text","code":-32601,"message":"Method not found"}, "id": null, "result": 1}"#;
     let result: serde_json::Error = serde_json::from_str::<Response>(text).unwrap_err();
     assert_eq!(result.to_string(), "JSON-RPC Response contains unknown field jsonrp at line 1 column 9");
 }
 
 #[test]
 fn response_deserialize_should_fail_on_mixing_result_error() {
-    let text = r#"{"jsonrpc":"2.0","error":{"data":"text","code":-32600,"message":"Invalid Request"}, "id": null, "result": 1}"#;
+    let text = r#"{"jsonrpc":"2.0","error":{"data":"text","code":-32601,"message":"Method not found"}, "id": null, "result": 1}"#;
     let result: serde_json::Error = serde_json::from_str::<Response>(text).unwrap_err();
-    assert_eq!(result.to_string(), "JSON-RPC Response contains both result and error field at line 1 column 104");
+    assert_eq!(result.to_string(), "JSON-RPC Response contains both result and error field at line 1 column 105");
 }
 
 #[test]
-fn success_failure_deserialize_should_fail_without_id() {
-    let text = r#"{"jsonrpc":"2.0","error":{"data":"text","code":-32600,"message":"Invalid Request"}}"#;
-    let result: serde_json::Error = serde_json::from_str::<Response>(text).unwrap_err();
-    assert_eq!(result.to_string(), "JSON-RPC Response is missing a id field. at line 1 column 83");
+fn success_failure_deserialize_without_id() {
+    let expected = Response::error(Version::V2, create_error(), None);
+    let text = r#"{"jsonrpc":"2.0","error":{"data":"text","code":-32601,"message":"Method not found"}}"#;
+
+    let result: Response = serde_json::from_str(text).unwrap();
+    assert_eq!(result, expected);
 }
