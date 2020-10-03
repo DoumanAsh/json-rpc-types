@@ -118,4 +118,14 @@ impl<T> Error<T> {
     pub const fn from_code(code: ErrorCode) -> Self {
         Self::with_custom_msg(code, code.message())
     }
+
+    #[inline(always)]
+    ///Adds optional payload to instance
+    pub fn set_data(self, data: T) -> Self {
+        Self {
+            code: self.code,
+            message: self.message,
+            data: Some(data)
+        }
+    }
 }
