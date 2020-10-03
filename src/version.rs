@@ -7,6 +7,13 @@ pub enum Version {
     V2,
 }
 
+impl Default for Version {
+    #[inline(always)]
+    fn default() -> Self {
+        Version::V2
+    }
+}
+
 impl Serialize for Version {
     fn serialize<S: Serializer>(&self, ser: S) -> Result<S::Ok, S::Error> {
         match *self {
