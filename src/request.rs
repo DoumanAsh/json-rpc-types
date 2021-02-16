@@ -37,7 +37,7 @@ pub struct Request<P, T=StrBuf> {
 
 impl<P, T> Request<P, T> {
     ///Returns whether request is notification.
-    pub fn is_notification(&self) -> bool {
+    pub const fn is_notification(&self) -> bool {
         self.id.is_none()
     }
 }
