@@ -1,7 +1,7 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde::de::{Error, Visitor};
 
-type StrBuf = str_buf::StrBuf<[u8; 36]>;
+type StrBuf = str_buf::StrBuf<36>;
 
 use core::fmt;
 

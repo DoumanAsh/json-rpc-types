@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-type StrBuf = str_buf::StrBuf<[u8; 32]>;
+type StrBuf = str_buf::StrBuf<32>;
 
 use crate::version::Version;
 use crate::id::Id;

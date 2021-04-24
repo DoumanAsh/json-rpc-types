@@ -1,12 +1,13 @@
 type Request = json_rpc_types::Request<Vec<serde_json::Value>>;
 
+use core::convert::TryInto;
 use json_rpc_types::{Id, Version};
 
 #[test]
 fn method_call_serialize() {
     let m = Request {
         jsonrpc: Version::V2,
-        method: "update".into(),
+        method: "update".try_into().unwrap(),
         params: Some(vec![serde_json::Value::from(1), serde_json::Value::from(2)]),
         id: Some(Id::Num(1)),
     };
@@ -19,7 +20,7 @@ fn method_call_serialize() {
 fn notification_serialize() {
     let m = Request {
         jsonrpc: Version::V2,
-        method: "update".into(),
+        method: "update".try_into().unwrap(),
         params: Some(vec![serde_json::Value::from(1), serde_json::Value::from(2)]),
         id: None,
     };
@@ -35,7 +36,7 @@ fn notification_deserialize() {
 
     let expected = Request {
         jsonrpc: Version::V2,
-        method: "update".into(),
+        method: "update".try_into().unwrap(),
         params: Some(vec![serde_json::Value::from(1), serde_json::Value::from(2)]),
         id: None,
     };
@@ -48,7 +49,7 @@ fn notification_deserialize() {
 
     let expected = Request {
         jsonrpc: Version::V2,
-        method: "update".into(),
+        method: "update".try_into().unwrap(),
         params: None,
         id: None,
     };
@@ -64,7 +65,7 @@ fn call_deserialize() {
 
     let expected = Request {
         jsonrpc: Version::V2,
-        method: "update".into(),
+        method: "update".try_into().unwrap(),
         params: Some(vec![serde_json::Value::from(1), serde_json::Value::from(2)]),
         id: Some(Id::Num(1)),
     };
@@ -77,7 +78,7 @@ fn call_deserialize() {
 
     let expected = Request {
         jsonrpc: Version::V2,
-        method: "update".into(),
+        method: "update".try_into().unwrap(),
         params: None,
         id: Some(Id::Num(1)),
     };

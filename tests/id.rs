@@ -1,6 +1,6 @@
 use json_rpc_types::Id;
 
-type StrBuf = str_buf::StrBuf<[u8; 36]>;
+type StrBuf = str_buf::StrBuf<36>;
 
 #[test]
 fn id_deserialization() {
