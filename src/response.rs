@@ -47,7 +47,7 @@ impl<R: Serialize, E: Serialize> Serialize for Response<R, E> {
         }?;
         match self.id {
             Some(ref id) => state.serialize_entry("id", id),
-            None => state.serialize_key("id"),
+            None => state.serialize_entry("id", &()),
         }?;
 
         state.end()
