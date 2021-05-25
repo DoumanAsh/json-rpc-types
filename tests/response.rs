@@ -64,3 +64,11 @@ fn success_failure_deserialize_without_id() {
     let result: Response = serde_json::from_str(text).unwrap();
     assert_eq!(result, expected);
 }
+
+#[test]
+fn success_serialize_null_id() {
+    let result = Response::result(Version::V2, serde_json::Value::from(1), None);
+
+    let serialized = serde_json::to_string(&result).unwrap();
+    assert_eq!(serialized, r#"{"jsonrpc":"2.0","result":1,"id":null}"#);
+}
