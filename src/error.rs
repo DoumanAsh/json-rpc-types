@@ -92,6 +92,37 @@ pub struct Error<T> {
 
 impl<T> Error<T> {
     ///Constructs error with custom message
+    pub const fn with_custom_msg_truncated(code: ErrorCode, message: &str) -> Self {
+        let mut storage = [mem::MaybeUninit::uninit(); 31];
+        let msg = message.as_bytes();
+        let mut idx = 0;
+
+        let idx_limit = if storage.len() > msg.len() {
+            msg.len()
+        } else {
+            storage.len()
+        };
+
+        loop {
+            storage[idx] = mem::MaybeUninit::new(msg[idx]);
+            idx += 1;
+            if idx == idx_limit {
+                break;
+            }
+        }
+
+        let message = unsafe {
+            StrBuf::from_storage(storage, idx as u8)
+        };
+
+        Self {
+            code,
+            message,
+            data: None,
+        }
+    }
+
+    ///Constructs error with custom message
     pub const fn with_custom_msg(code: ErrorCode, message: &str) -> Self {
         let mut storage = [mem::MaybeUninit::uninit(); 31];
         let msg = message.as_bytes();
