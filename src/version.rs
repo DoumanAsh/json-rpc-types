@@ -27,12 +27,12 @@ impl Serialize for Version {
 
 impl<'a> Deserialize<'a> for Version {
     fn deserialize<D: Deserializer<'a>>(des: D) -> Result<Self, D::Error> {
-        des.deserialize_any(VersionVisitor)
+        des.deserialize_str(VersionVisitor)
     }
 }
 
 struct VersionVisitor;
- 
+
 impl<'a> Visitor<'a> for VersionVisitor {
     type Value = Version;
 

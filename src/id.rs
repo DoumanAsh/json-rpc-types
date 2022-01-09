@@ -1,5 +1,5 @@
-use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::de::{Error, Visitor};
 
 type StrBuf = str_buf::StrBuf<36>;
 
@@ -59,3 +59,4 @@ impl<'a> Visitor<'a> for IdVisitor {
         }
     }
 }
+
