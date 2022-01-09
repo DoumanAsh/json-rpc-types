@@ -1,5 +1,5 @@
+use serde::de::{Error, MapAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde::de::{Error, Visitor};
 
 type StrBuf = str_buf::StrBuf<36>;
 
@@ -57,6 +57,14 @@ impl<'a> Visitor<'a> for IdVisitor {
             }
             Ok(Id::Str(res))
         }
+    }
+
+    fn visit_map<E>(self, mut map: E) -> Result<Self::Value, E::Error>
+    where
+        E: MapAccess<'a>,
+    {
+        let entry: StrBuf = map.next_value()?;
+        self.visit_str(entry.as_str())
     }
 }
 
