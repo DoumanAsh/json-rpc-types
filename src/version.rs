@@ -1,4 +1,7 @@
+use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+use core::fmt;
 
 ///Protocol Version
 #[derive(Debug, PartialEq, Clone, Copy, Hash, Eq)]
@@ -24,8 +27,23 @@ impl Serialize for Version {
 
 impl<'a> Deserialize<'a> for Version {
     fn deserialize<D: Deserializer<'a>>(des: D) -> Result<Self, D::Error> {
-        let text: &'a str = Deserialize::deserialize(des)?;
-        match text {
+        des.deserialize_any(VersionVisitor)
+    }
+}
+
+struct VersionVisitor;
+ 
+impl<'a> Visitor<'a> for VersionVisitor {
+    type Value = Version;
+
+    #[inline]
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("Identifier must be a string")
+    }
+
+    #[inline]
+    fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
+        match v {
             "2.0" => Ok(Version::V2),
             _ => Err(serde::de::Error::custom("Invalid version. Allowed: 2.0")),
         }
