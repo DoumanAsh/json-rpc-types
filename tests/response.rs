@@ -72,3 +72,12 @@ fn success_serialize_null_id() {
     let serialized = serde_json::to_string(&result).unwrap();
     assert_eq!(serialized, r#"{"jsonrpc":"2.0","result":1,"id":null}"#);
 }
+
+#[test]
+fn success_deserialize_from_serde_json() {
+    let json_str = r#"{"id":"1","jsonrpc":"2.0","result":null}"#;
+    let value: serde_json::Value = serde_json::from_str(json_str).unwrap();
+    println!("{:?}", value);
+    let response3: Response = serde_json::from_value(value).unwrap();
+    println!("{:?}", response3);
+}
