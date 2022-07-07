@@ -4,6 +4,7 @@ use serde::de::{Error, Visitor};
 type StrBuf = str_buf::StrBuf<36>;
 
 use core::fmt;
+use core::convert::TryInto;
 
 ///Request identfier
 #[derive(Debug, PartialEq, Clone, Hash, Eq)]
@@ -47,6 +48,25 @@ impl<'a> Visitor<'a> for IdVisitor {
     }
 
     #[inline]
+    fn visit_i64<E: Error>(self, id: i64) -> Result<Self::Value, E> {
+        match id.try_into() {
+            Ok(id) => Ok(Id::Num(id)),
+            Err(_) => Err(Error::custom("Number doesn't fit u64")),
+        }
+    }
+
+    #[inline]
+    fn visit_f64<E: Error>(self, id: f64) -> Result<Self::Value, E> {
+        if !id.is_finite() {
+            return Err(Error::custom("Number is not finite"));
+        } else if id.fract() != 0.0 {
+            return Err(Error::custom("Number has fractional part"));
+        }
+
+        Ok(Id::Num(id as u64))
+    }
+
+    #[inline]
     fn visit_str<E: Error>(self, id: &str) -> Result<Self::Value, E> {
         if id.len() > StrBuf::capacity() {
             Err(Error::custom(format_args!("Textual identifier cannot exceed {} bytes", StrBuf::capacity())))
@@ -59,4 +79,3 @@ impl<'a> Visitor<'a> for IdVisitor {
         }
     }
 }
-

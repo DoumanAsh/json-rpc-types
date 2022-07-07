@@ -3,6 +3,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use crate::error::Error;
 use crate::version::Version;
 use crate::id::Id;
+use crate::utils::Key;
 
 ///Response representation.
 ///
@@ -76,27 +77,24 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Deserialize<'de> for Respons
                 let mut result = None;
                 let mut id = None;
 
-                while let Some(key) = map.next_key::<&'de str>()? {
+                while let Some(key) = map.next_key::<Key>()? {
                     match key {
-                        "jsonrpc" => {
+                        Key::JsonRpc => {
                             version = Some(map.next_value::<Version>()?);
                         },
-                        "result" => if result.is_none() {
+                        Key::Result => if result.is_none() {
                             result = Some(Ok(map.next_value::<R>()?));
                         } else {
                             return Err(serde::de::Error::custom("JSON-RPC Response contains both result and error field"));
                         },
-                        "error" => if result.is_none() {
+                        Key::Error => if result.is_none() {
                             result = Some(Err(map.next_value::<Error<E>>()?));
                         } else {
                             return Err(serde::de::Error::custom("JSON-RPC Response contains both error and result field"));
                         },
-                        "id" => {
+                        Key::Id => {
                             id = map.next_value::<Option<Id>>()?;
                         },
-                        unknown => {
-                            return Err(serde::de::Error::custom(format_args!("JSON-RPC Response contains unknown field {}", unknown)));
-                        }
                     }
                 }
 
