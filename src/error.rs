@@ -4,7 +4,7 @@ use serde::ser::{Serializer};
 
 use core::mem;
 
-type StrBuf = str_buf::StrBuf<31>;
+pub(crate) type StrBuf = str_buf::StrBuf<31>;
 
 ///JSON-RPC error code
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -80,20 +80,32 @@ impl Serialize for ErrorCode {
 ///Error object, defined by JSON-RPC
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct Error<T> {
+pub struct Error<T, M=StrBuf> {
     ///Code
     pub code: ErrorCode,
     ///Message
-    pub message: StrBuf,
+    pub message: M,
     ///Optional data
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<T>,
 }
 
-impl<T> Error<T> {
+impl<'a, T, EM: From<&'a str>> Error<T, EM> {
+    #[inline]
+    ///Constructs error by converting message from string.
+    pub fn with_text_message(code: ErrorCode, message: &'a str) -> Self {
+        Self {
+            code,
+            message: message.into(),
+            data: None,
+        }
+    }
+}
+
+impl<const N: usize, T> Error<T, str_buf::StrBuf<N>> {
     ///Constructs error with custom message
     pub const fn with_custom_msg_truncated(code: ErrorCode, message: &str) -> Self {
-        let mut storage = [mem::MaybeUninit::uninit(); 31];
+        let mut storage = [mem::MaybeUninit::uninit(); N];
         let msg = message.as_bytes();
         let mut idx = 0;
 
@@ -112,7 +124,7 @@ impl<T> Error<T> {
         }
 
         let message = unsafe {
-            StrBuf::from_storage(storage, idx as u8)
+            str_buf::StrBuf::from_storage(storage, idx as u8)
         };
 
         Self {
@@ -124,7 +136,7 @@ impl<T> Error<T> {
 
     ///Constructs error with custom message
     pub const fn with_custom_msg(code: ErrorCode, message: &str) -> Self {
-        let mut storage = [mem::MaybeUninit::uninit(); 31];
+        let mut storage = [mem::MaybeUninit::uninit(); N];
         let msg = message.as_bytes();
         let mut idx = 0;
         loop {
@@ -136,7 +148,7 @@ impl<T> Error<T> {
         }
 
         let message = unsafe {
-            StrBuf::from_storage(storage, msg.len() as u8)
+            str_buf::StrBuf::from_storage(storage, msg.len() as u8)
         };
 
         Self {
