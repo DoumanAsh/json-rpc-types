@@ -17,15 +17,16 @@ use crate::utils::Key;
 ///
 ///Type parameters:
 ///
-///- `R` - Type of payload for successful response
-///- `E` - Type of optional data for `Error`.
+///- `R`  - Type of payload for successful response
+///- `E`  - Type of optional data for `Error`.
+///- `EM` - Type of `E::M`, which is used for `message` field of error.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Response<R, E> {
+pub struct Response<R, E, EM=crate::error::StrBuf> {
     ///A String specifying the version of the JSON-RPC protocol.
     pub jsonrpc: Version,
 
     ///Content of response, depending on whether it is success or failure.
-    pub payload: Result<R, Error<E>>,
+    pub payload: Result<R, Error<E, EM>>,
 
     ///An identifier established by the Client.
     ///
@@ -35,7 +36,7 @@ pub struct Response<R, E> {
     pub id: Option<Id>,
 }
 
-impl<R: Serialize, E: Serialize> Serialize for Response<R, E> {
+impl<R: Serialize, E: Serialize, EM: Serialize> Serialize for Response<R, E, EM> {
     fn serialize<S: Serializer>(&self, ser: S) -> Result<S::Ok, S::Error> {
         use serde::ser::SerializeMap;
 
@@ -55,15 +56,15 @@ impl<R: Serialize, E: Serialize> Serialize for Response<R, E> {
     }
 }
 
-impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Deserialize<'de> for Response<R, E> {
+impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deserialize<'de> for Response<R, E, EM> {
     fn deserialize<D: Deserializer<'de>>(der: D) -> Result<Self, D::Error> {
         use core::marker::PhantomData;
         use serde::de::{self, Visitor};
 
-        struct MapVisit<R, E>(PhantomData<Result<R, E>>);
+        struct MapVisit<R, E, EM>(PhantomData<(R, E, EM)>);
 
-        impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Visitor<'de> for MapVisit<R, E> {
-            type Value = Response<R, E>;
+        impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Visitor<'de> for MapVisit<R, E, EM> {
+            type Value = Response<R, E, EM>;
 
             #[inline]
             fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
@@ -88,7 +89,7 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Deserialize<'de> for Respons
                             return Err(serde::de::Error::custom("JSON-RPC Response contains both result and error field"));
                         },
                         Key::Error => if result.is_none() {
-                            result = Some(Err(map.next_value::<Error<E>>()?));
+                            result = Some(Err(map.next_value::<Error<E, EM>>()?));
                         } else {
                             return Err(serde::de::Error::custom("JSON-RPC Response contains both error and result field"));
                         },
@@ -116,7 +117,7 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>> Deserialize<'de> for Respons
     }
 }
 
-impl<R, E> Response<R, E> {
+impl<R, E, EM> Response<R, E, EM> {
     #[inline]
     ///Creates successful response.
     pub const fn result(jsonrpc: Version, result: R, id: Option<Id>) -> Self {
@@ -129,7 +130,7 @@ impl<R, E> Response<R, E> {
 
     #[inline]
     ///Creates error response.
-    pub const fn error(jsonrpc: Version, error: Error<E>, id: Option<Id>) -> Self {
+    pub const fn error(jsonrpc: Version, error: Error<E, EM>, id: Option<Id>) -> Self {
         Self {
             jsonrpc,
             payload: Err(error),
