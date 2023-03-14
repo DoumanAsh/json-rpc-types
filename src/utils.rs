@@ -17,7 +17,7 @@ impl<'a> Visitor<'a> for KeyVisitor {
 
     #[inline]
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("Key must be a string")
+        formatter.write_str("Key must be a string and one of the following values: ['jsonrpc', 'result', 'error', 'id']")
     }
 
     #[inline]
@@ -31,7 +31,7 @@ impl<'a> Visitor<'a> for KeyVisitor {
         } else if text.eq_ignore_ascii_case("id") {
             Ok(Key::Id)
         } else {
-            Err(Error::custom(format_args!("JSON-RPC Response contains unknown field {}", text)))
+            Err(Error::invalid_value(serde::de::Unexpected::Str(text), &self))
         }
     }
 }
@@ -43,4 +43,3 @@ impl<'a> Deserialize<'a> for Key {
         des.deserialize_str(KeyVisitor)
     }
 }
-

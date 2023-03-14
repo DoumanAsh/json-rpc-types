@@ -4,6 +4,15 @@ type StrBuf = str_buf::StrBuf<36>;
 
 #[test]
 fn id_deserialization() {
+    let s = "2";
+    let deserialized: Id = serde_json::from_str(s).unwrap();
+    assert_eq!(deserialized, Id::Num(2));
+
+    let s = "-2";
+    assert!(serde_json::from_str::<Id>(s).is_err());
+    let s = "2.1";
+    assert!(serde_json::from_str::<Id>(s).is_err());
+
     let s = r#""2""#;
     let deserialized: Id = serde_json::from_str(s).unwrap();
     let mut buffer = StrBuf::new();

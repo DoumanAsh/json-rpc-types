@@ -38,14 +38,14 @@ impl<'a> Visitor<'a> for VersionVisitor {
 
     #[inline]
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("Identifier must be a string")
+        formatter.write_str("Identifier must be a string and be of one the following: ['2.0']")
     }
 
     #[inline]
     fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
         match v {
             "2.0" => Ok(Version::V2),
-            _ => Err(serde::de::Error::custom("Invalid version. Allowed: 2.0")),
+            _ => Err(Error::invalid_value(serde::de::Unexpected::Str(v), &self))
         }
     }
 }

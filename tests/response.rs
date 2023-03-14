@@ -46,7 +46,7 @@ fn success_failure_deserialize() {
 fn response_deserialize_should_fail_on_unknown_field() {
     let text = r#"{"jsonrp":"2.0","error":{"data":"text","code":-32601,"message":"Method not found"}, "id": null, "result": 1}"#;
     let result: serde_json::Error = serde_json::from_str::<Response>(text).unwrap_err();
-    assert_eq!(result.to_string(), "JSON-RPC Response contains unknown field jsonrp at line 1 column 9");
+    assert_eq!(result.to_string(), "invalid value: string \"jsonrp\", expected Key must be a string and one of the following values: ['jsonrpc', 'result', 'error', 'id'] at line 1 column 9");
 }
 
 #[test]

@@ -5,7 +5,7 @@
 #![warn(missing_docs)]
 
 #![no_std]
-#![cfg_attr(feature = "cargo-clippy", allow(clippy::style))]
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::style, clippy::derivable_impls))]
 
 pub use str_buf;
 
