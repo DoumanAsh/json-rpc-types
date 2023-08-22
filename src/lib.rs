@@ -3,10 +3,10 @@
 //! This library provides generic type definitions to serialize/deserialize JSON-RPC request/responses.
 //! It doesn't contain implementation itself as it is intended to be used as building block of actual implementation.
 #![warn(missing_docs)]
-#![rustfmt::skip]
 
 #![no_std]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::style, clippy::derivable_impls))]
+#![cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
 
 pub use str_buf;
 

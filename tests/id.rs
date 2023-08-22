@@ -1,4 +1,4 @@
-#![rustfmt::skip]
+#![cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
 
 use json_rpc_types::Id;
 

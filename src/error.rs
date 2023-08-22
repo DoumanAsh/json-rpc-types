@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 use serde::de::{Deserializer};
 use serde::ser::{Serializer};
 
-use core::fmt::Display;
+use core::fmt;
 use core::mem;
 
 pub(crate) type StrBuf = str_buf::StrBuf<31>;
@@ -105,9 +105,10 @@ impl<'a, T, EM: From<&'a str>> Error<T, EM> {
     }
 }
 
-impl<T> Display for Error<T> {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}", self.code.message())
+impl<T> fmt::Display for Error<T> {
+    #[inline(always)]
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt.write_str(self.code.message())
     }
 }
 

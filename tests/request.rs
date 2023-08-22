@@ -1,4 +1,4 @@
-#![rustfmt::skip]
+#![cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
 
 type Request = json_rpc_types::Request<Vec<serde_json::Value>>;
 

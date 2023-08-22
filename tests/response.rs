@@ -1,4 +1,4 @@
-#![rustfmt::skip]
+#![cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
 
 type Response = json_rpc_types::Response<serde_json::Value, serde_json::Value>;
 
