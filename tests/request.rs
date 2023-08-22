@@ -1,3 +1,5 @@
+#![rustfmt::skip]
+
 type Request = json_rpc_types::Request<Vec<serde_json::Value>>;
 
 use core::convert::TryInto;

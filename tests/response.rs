@@ -1,3 +1,5 @@
+#![rustfmt::skip]
+
 type Response = json_rpc_types::Response<serde_json::Value, serde_json::Value>;
 
 use json_rpc_types::{Id, Version, Error, ErrorCode};

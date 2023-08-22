@@ -1,3 +1,5 @@
+#![rustfmt::skip]
+
 type Error = json_rpc_types::Error<()>;
 use json_rpc_types::ErrorCode;
 

@@ -1,3 +1,5 @@
+#![rustfmt::skip]
+
 use json_rpc_types::Id;
 
 type StrBuf = str_buf::StrBuf<36>;

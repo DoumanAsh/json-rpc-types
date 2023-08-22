@@ -1,3 +1,5 @@
+#[rustfmt::skip]
+
 use serde::{Serialize, Deserialize};
 use serde::de::{Deserializer};
 use serde::ser::{Serializer};
