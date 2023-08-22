@@ -45,7 +45,7 @@ impl<'a> Visitor<'a> for VersionVisitor {
     fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
         match v {
             "2.0" => Ok(Version::V2),
-            _ => Err(Error::invalid_value(serde::de::Unexpected::Str(v), &self))
+            _ => Err(Error::invalid_value(serde::de::Unexpected::Str(v), &self)),
         }
     }
 }

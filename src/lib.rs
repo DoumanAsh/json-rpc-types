@@ -3,9 +3,11 @@
 //! This library provides generic type definitions to serialize/deserialize JSON-RPC request/responses.
 //! It doesn't contain implementation itself as it is intended to be used as building block of actual implementation.
 #![warn(missing_docs)]
-
 #![no_std]
-#![cfg_attr(feature = "cargo-clippy", allow(clippy::style, clippy::derivable_impls))]
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(clippy::style, clippy::derivable_impls)
+)]
 
 pub use str_buf;
 
@@ -14,7 +16,7 @@ pub use version::Version;
 mod id;
 pub use id::Id;
 mod error;
-pub use error::{ErrorCode, Error};
+pub use error::{Error, ErrorCode};
 mod request;
 pub use request::Request;
 mod response;

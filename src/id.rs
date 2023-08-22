@@ -1,5 +1,5 @@
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde::de::{Error, Visitor};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 type StrBuf = str_buf::StrBuf<36>;
 
@@ -38,7 +38,8 @@ impl<'a> Visitor<'a> for IdVisitor {
 
     #[inline]
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("Identifier must be either unsigned integer or 36 character long string")
+        formatter
+            .write_str("Identifier must be either unsigned integer or 36 character long string")
     }
 
     #[inline]
@@ -49,7 +50,10 @@ impl<'a> Visitor<'a> for IdVisitor {
     #[inline]
     fn visit_i64<E: Error>(self, id: i64) -> Result<Self::Value, E> {
         if id < 0 {
-            Err(Error::invalid_value(serde::de::Unexpected::Signed(id), &self))
+            Err(Error::invalid_value(
+                serde::de::Unexpected::Signed(id),
+                &self,
+            ))
         } else {
             Ok(Id::Num(id as u64))
         }
@@ -57,7 +61,10 @@ impl<'a> Visitor<'a> for IdVisitor {
 
     #[inline]
     fn visit_f64<E: Error>(self, id: f64) -> Result<Self::Value, E> {
-        Err(Error::invalid_value(serde::de::Unexpected::Float(id), &self))
+        Err(Error::invalid_value(
+            serde::de::Unexpected::Float(id),
+            &self,
+        ))
     }
 
     #[inline]

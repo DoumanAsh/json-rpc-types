@@ -1,9 +1,9 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 type StrBuf = str_buf::StrBuf<32>;
 
-use crate::version::Version;
 use crate::id::Id;
+use crate::version::Version;
 
 ///Request representation.
 ///
@@ -17,7 +17,7 @@ use crate::id::Id;
 ///- `T` - specifies textual type. By default it uses static buffer of 32 bytes, which is more than enough in normal cases.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub struct Request<P, T=StrBuf> {
+pub struct Request<P, T = StrBuf> {
     ///A String specifying the version of the JSON-RPC protocol.
     pub jsonrpc: Version,
     ///A String containing the name of the method to be invoked

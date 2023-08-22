@@ -13,7 +13,10 @@ fn method_call_serialize() {
     };
 
     let serialized = serde_json::to_string(&m).unwrap();
-    assert_eq!(serialized, r#"{"jsonrpc":"2.0","method":"update","params":[1,2],"id":1}"#);
+    assert_eq!(
+        serialized,
+        r#"{"jsonrpc":"2.0","method":"update","params":[1,2],"id":1}"#
+    );
 }
 
 #[test]
@@ -26,7 +29,10 @@ fn notification_serialize() {
     };
 
     let serialized = serde_json::to_string(&m).unwrap();
-    assert_eq!(serialized, r#"{"jsonrpc":"2.0","method":"update","params":[1,2]}"#);
+    assert_eq!(
+        serialized,
+        r#"{"jsonrpc":"2.0","method":"update","params":[1,2]}"#
+    );
 }
 
 #[test]

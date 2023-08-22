@@ -1,5 +1,5 @@
-use serde::{Deserialize, Deserializer};
 use serde::de::{Error, Visitor};
+use serde::{Deserialize, Deserializer};
 
 use core::fmt;
 
@@ -31,11 +31,13 @@ impl<'a> Visitor<'a> for KeyVisitor {
         } else if text.eq_ignore_ascii_case("id") {
             Ok(Key::Id)
         } else {
-            Err(Error::invalid_value(serde::de::Unexpected::Str(text), &self))
+            Err(Error::invalid_value(
+                serde::de::Unexpected::Str(text),
+                &self,
+            ))
         }
     }
 }
-
 
 impl<'a> Deserialize<'a> for Key {
     #[inline]

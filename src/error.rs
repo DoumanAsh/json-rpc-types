@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
-use serde::de::{Deserializer};
-use serde::ser::{Serializer};
+use serde::de::Deserializer;
+use serde::ser::Serializer;
+use serde::{Deserialize, Serialize};
 
 use core::mem;
 
@@ -80,7 +80,7 @@ impl Serialize for ErrorCode {
 ///Error object, defined by JSON-RPC
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct Error<T, M=StrBuf> {
+pub struct Error<T, M = StrBuf> {
     ///Code
     pub code: ErrorCode,
     ///Message
@@ -123,9 +123,7 @@ impl<const N: usize, T> Error<T, str_buf::StrBuf<N>> {
             }
         }
 
-        let message = unsafe {
-            str_buf::StrBuf::from_storage(storage, idx as u8)
-        };
+        let message = unsafe { str_buf::StrBuf::from_storage(storage, idx as u8) };
 
         Self {
             code,
@@ -147,9 +145,7 @@ impl<const N: usize, T> Error<T, str_buf::StrBuf<N>> {
             }
         }
 
-        let message = unsafe {
-            str_buf::StrBuf::from_storage(storage, msg.len() as u8)
-        };
+        let message = unsafe { str_buf::StrBuf::from_storage(storage, msg.len() as u8) };
 
         Self {
             code,
@@ -170,7 +166,7 @@ impl<const N: usize, T> Error<T, str_buf::StrBuf<N>> {
         Self {
             code: self.code,
             message: self.message,
-            data: Some(data)
+            data: Some(data),
         }
     }
 }

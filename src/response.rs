@@ -1,9 +1,9 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::error::Error;
-use crate::version::Version;
 use crate::id::Id;
 use crate::utils::Key;
+use crate::version::Version;
 
 ///Response representation.
 ///
@@ -21,7 +21,7 @@ use crate::utils::Key;
 ///- `E`  - Type of optional data for `Error`.
 ///- `EM` - Type of `E::M`, which is used for `message` field of error.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Response<R, E, EM=crate::error::StrBuf> {
+pub struct Response<R, E, EM = crate::error::StrBuf> {
     ///A String specifying the version of the JSON-RPC protocol.
     pub jsonrpc: Version,
 
@@ -56,14 +56,18 @@ impl<R: Serialize, E: Serialize, EM: Serialize> Serialize for Response<R, E, EM>
     }
 }
 
-impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deserialize<'de> for Response<R, E, EM> {
+impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deserialize<'de>
+    for Response<R, E, EM>
+{
     fn deserialize<D: Deserializer<'de>>(der: D) -> Result<Self, D::Error> {
         use core::marker::PhantomData;
         use serde::de::{self, Visitor};
 
         struct MapVisit<R, E, EM>(PhantomData<(R, E, EM)>);
 
-        impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Visitor<'de> for MapVisit<R, E, EM> {
+        impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Visitor<'de>
+            for MapVisit<R, E, EM>
+        {
             type Value = Response<R, E, EM>;
 
             #[inline]
@@ -82,20 +86,28 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deseri
                     match key {
                         Key::JsonRpc => {
                             version = Some(map.next_value::<Version>()?);
-                        },
-                        Key::Result => if result.is_none() {
-                            result = Some(Ok(map.next_value::<R>()?));
-                        } else {
-                            return Err(serde::de::Error::custom("JSON-RPC Response contains both result and error field"));
-                        },
-                        Key::Error => if result.is_none() {
-                            result = Some(Err(map.next_value::<Error<E, EM>>()?));
-                        } else {
-                            return Err(serde::de::Error::custom("JSON-RPC Response contains both error and result field"));
-                        },
+                        }
+                        Key::Result => {
+                            if result.is_none() {
+                                result = Some(Ok(map.next_value::<R>()?));
+                            } else {
+                                return Err(serde::de::Error::custom(
+                                    "JSON-RPC Response contains both result and error field",
+                                ));
+                            }
+                        }
+                        Key::Error => {
+                            if result.is_none() {
+                                result = Some(Err(map.next_value::<Error<E, EM>>()?));
+                            } else {
+                                return Err(serde::de::Error::custom(
+                                    "JSON-RPC Response contains both error and result field",
+                                ));
+                            }
+                        }
                         Key::Id => {
                             id = map.next_value::<Option<Id>>()?;
-                        },
+                        }
                     }
                 }
 
@@ -106,7 +118,11 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deseri
                     },
                     payload: match result {
                         Some(payload) => payload,
-                        None => return Err(serde::de::Error::custom("JSON-RPC Response is missing either result or error field.")),
+                        None => {
+                            return Err(serde::de::Error::custom(
+                                "JSON-RPC Response is missing either result or error field.",
+                            ))
+                        }
                     },
                     id,
                 })
