@@ -5,6 +5,8 @@ use crate::version::Version;
 use crate::id::Id;
 use crate::utils::Key;
 
+use core::mem;
+
 ///Response representation.
 ///
 ///When omitting `id`, it shall be serialized as `null` and means you're unable to identify `id` of
@@ -83,15 +85,32 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deseri
                         Key::JsonRpc => {
                             version = Some(map.next_value::<Version>()?);
                         },
-                        Key::Result => if result.is_none() {
-                            result = Some(Ok(map.next_value::<R>()?));
-                        } else {
-                            return Err(serde::de::Error::custom("JSON-RPC Response contains both result and error field"));
+                        //If for some reason user wishes to convey success with NULL, we need to respect that.
+                        //This cannot be the case for error as its format is well defined
+                        //And while spec does say `result` field MUST be object, theoretically NULL should qualify too.
+                        //This is hack because bitch cannot have specialization stabilized forever
+                        Key::Result if mem::size_of::<R>() == 0 => {
+                            if result.is_none() {
+                                result = Some(Ok(map.next_value::<R>()?));
+                            } else {
+                                return Err(serde::de::Error::custom("JSON-RPC Response contains both result and error field"));
+                            }
+                        }
+                        Key::Result => match map.next_value::<Option<R>>()? {
+                            Some(value) => if result.is_none() {
+                                result = Some(Ok(value));
+                            } else {
+                                return Err(serde::de::Error::custom("JSON-RPC Response contains both result and error field"));
+                            }
+                            None => continue,
                         },
-                        Key::Error => if result.is_none() {
-                            result = Some(Err(map.next_value::<Error<E, EM>>()?));
-                        } else {
-                            return Err(serde::de::Error::custom("JSON-RPC Response contains both error and result field"));
+                        Key::Error => match map.next_value::<Option<Error<E, EM>>>()? {
+                            Some(error) => if result.is_none() {
+                                result = Some(Err(error));
+                            } else {
+                                return Err(serde::de::Error::custom("JSON-RPC Response contains both error and result field"));
+                            }
+                            None => continue,
                         },
                         Key::Id => {
                             id = map.next_value::<Option<Id>>()?;
@@ -106,7 +125,9 @@ impl<'de, R: Deserialize<'de>, E: Deserialize<'de>, EM: Deserialize<'de>> Deseri
                     },
                     payload: match result {
                         Some(payload) => payload,
-                        None => return Err(serde::de::Error::custom("JSON-RPC Response is missing either result or error field.")),
+                        None => {
+                            return Err(serde::de::Error::custom("JSON-RPC Response is missing either result or error field."));
+                        }
                     },
                     id,
                 })
