@@ -19,6 +19,7 @@ use crate::id::Id;
 #[serde(deny_unknown_fields)]
 pub struct Request<P, T=StrBuf> {
     ///A String specifying the version of the JSON-RPC protocol.
+    #[serde(default)]
     pub jsonrpc: Version,
     ///A String containing the name of the method to be invoked
     ///
