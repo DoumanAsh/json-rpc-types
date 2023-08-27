@@ -5,7 +5,7 @@ use json_rpc_types::Id;
 type StrBuf = str_buf::StrBuf<36>;
 
 #[test]
-fn id_deserialization() {
+fn id_deserialization_int() {
     let s = "2";
     let deserialized: Id = serde_json::from_str(s).unwrap();
     assert_eq!(deserialized, Id::Num(2));
@@ -15,15 +15,19 @@ fn id_deserialization() {
     let s = "2.1";
     assert!(serde_json::from_str::<Id>(s).is_err());
 
+    let s = r#"2"#;
+    let deserialized: Id = serde_json::from_str(s).unwrap();
+    assert_eq!(deserialized, Id::Num(2));
+}
+
+#[test]
+#[cfg(not(feature = "id-fixed-int"))]
+fn id_deserialization_str() {
     let s = r#""2""#;
     let deserialized: Id = serde_json::from_str(s).unwrap();
     let mut buffer = StrBuf::new();
     buffer.push_str("2");
     assert_eq!(deserialized, Id::Str(buffer));
-
-    let s = r#"2"#;
-    let deserialized: Id = serde_json::from_str(s).unwrap();
-    assert_eq!(deserialized, Id::Num(2));
 
     let s = r#""2x""#;
     let deserialized: Id = serde_json::from_str(s).unwrap();

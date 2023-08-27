@@ -27,7 +27,14 @@ impl Serialize for Id {
 impl<'a> Deserialize<'a> for Id {
     #[inline]
     fn deserialize<D: Deserializer<'a>>(des: D) -> Result<Self, D::Error> {
-        des.deserialize_any(IdVisitor)
+        #[cfg(feature = "id-fixed-int")]
+        {
+            des.deserialize_u64(IdVisitor)
+        }
+        #[cfg(not(feature = "id-fixed-int"))]
+        {
+            des.deserialize_any(IdVisitor)
+        }
     }
 }
 
