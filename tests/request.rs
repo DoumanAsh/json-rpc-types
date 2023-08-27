@@ -58,6 +58,19 @@ fn notification_deserialize() {
 
     assert!(notification.is_notification());
     assert_eq!(expected, notification);
+
+    let text = r#"{"method":"update"}"#;
+    let notification: Request = serde_json::from_str(text).unwrap();
+
+    let expected = Request {
+        jsonrpc: Version::V2,
+        method: "update".try_into().unwrap(),
+        params: None,
+        id: None,
+    };
+
+    assert!(notification.is_notification());
+    assert_eq!(expected, notification);
 }
 
 #[test]
