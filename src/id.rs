@@ -27,7 +27,21 @@ impl Serialize for Id {
 impl<'a> Deserialize<'a> for Id {
     #[inline]
     fn deserialize<D: Deserializer<'a>>(des: D) -> Result<Self, D::Error> {
-        des.deserialize_any(IdVisitor)
+        #[cfg(all(feature = "id-number-only", feature = "id-str-only"))]
+        compile_error!("You MUST select either 'id-number-only' or 'id-str-only' feature");
+
+        #[cfg(not(any(feature = "id-number-only", feature = "id-str-only")))]
+        {
+            des.deserialize_any(IdVisitor)
+        }
+        #[cfg(feature = "id-str-only")]
+        {
+            des.deserialize_str(IdVisitor)
+        }
+        #[cfg(feature = "id-number-only")]
+        {
+            des.deserialize_u64(IdVisitor)
+        }
     }
 }
 

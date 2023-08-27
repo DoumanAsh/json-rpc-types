@@ -31,3 +31,8 @@ jobs:
 
     - name: Test
       run: cargo test
+
+    - name: Check ID customization features
+      run: |
+        cargo check --features id-str-only
+        cargo check --features id-number-only

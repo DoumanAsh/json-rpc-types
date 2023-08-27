@@ -6,3 +6,8 @@
 
 This library provides generic type definitions to serialize/deserialize JSON-RPC request/responses.
 It doesn't contain implementation itself as it is intended to be used as building block of actual implementation.
+
+## Features
+
+- `id-str-only` - Forces ID deserialization to assume string only.
+- `id-number-only` - Forces ID deserialization to assume number only.

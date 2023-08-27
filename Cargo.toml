@@ -1,6 +1,6 @@
 [package]
 name = "json-rpc-types"
-version = "1.3.2"
+version = "1.3.3"
 authors = ["Douman <douman@gmx.se>"]
 edition = "2018"
 description = "Type definitions for JSON-RPC"
@@ -15,6 +15,11 @@ include = [
     "README.md"
 ]
 
+[features]
+# Customize Id behavior in deserialization
+id-number-only = []
+id-str-only = []
+
 [dependencies.str-buf]
 version = "3"
 features = ["serde"]
@@ -26,3 +31,6 @@ features = ["derive"]
 
 [dev-dependencies.serde_json]
 version = "1"
+
+[dev-dependencies.serde-json-core]
+version = "0.5"
