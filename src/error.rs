@@ -81,7 +81,7 @@ impl Serialize for ErrorCode {
 }
 
 ///Error object, defined by JSON-RPC
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Error<T, M=StrBuf> {
     ///Code

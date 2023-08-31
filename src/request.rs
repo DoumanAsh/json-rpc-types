@@ -1,5 +1,4 @@
-use serde::{Serialize, Deserialize};
-
+use serde_derive::{Serialize, Deserialize};
 type StrBuf = str_buf::StrBuf<32>;
 
 use crate::version::Version;
@@ -15,7 +14,7 @@ use crate::id::Id;
 ///
 ///- `P` - to specify type of `params` field, which is optional. Normally it should be collection of values or object. But choice is yours.
 ///- `T` - specifies textual type. By default it uses static buffer of 32 bytes, which is more than enough in normal cases.
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Request<P, T=StrBuf> {
     ///A String specifying the version of the JSON-RPC protocol.
